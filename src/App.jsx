@@ -17,6 +17,8 @@ const theme = createTheme({
 
 let cancelAxios = null;
 
+const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
+
 function App() {
   const { t, i18n } = useTranslation();
 
@@ -43,10 +45,12 @@ function App() {
   }
   useEffect(() => {
     i18n.changeLanguage(local);
-    setDateAndTime(moment().format("MMMM Do YYYY, h:mm:ss a"));
+    const timer = setInterval(() => {
+      setDateAndTime(moment().format("MMMM Do YYYY, h:mm:ss a"));
+    }, 1000);
     axios
       .get(
-        "https://api.openweathermap.org/data/2.5/weather?lat=32.2211&lon=35.2544&appid=f7720989feaad6c73a386eaf0e74e800",
+        `https://api.openweathermap.org/data/2.5/weather?lat=32.2211&lon=35.2544&appid=${apiKey}`,
         {
           cancelToken: new axios.CancelToken((c) => {
             cancelAxios = c;
@@ -73,6 +77,7 @@ function App() {
         console.log(error);
       });
     return () => {
+      clearInterval(timer);
       cancelAxios();
     };
   }, []);
